@@ -1,5 +1,6 @@
 import pygame
 from models.Player import Player
+from models.Map import Map
 
 class GameManager:
     __instance = None  # Singleton için özel değişken
@@ -26,13 +27,16 @@ class GameManager:
 
         # --- Oyun ekranını ve bileşenleri başlat ---
         pygame.init()
-        self.screen = pygame.display.set_mode((640, 480))  # pencere boyutu
+        self.screen = pygame.display.set_mode((520, 450))  # pencere boyutu
         pygame.display.set_caption("Bomberman – Week 1")   # pencere başlığı
         self.clock = pygame.time.Clock()                   # FPS kontrolü
         self.running = True
 
-        # Oyuncu nesnesi oluştur
-        self.player = Player(300, 220, 5)
+        # Harita nesnesi oluştur
+        self.map = Map(15, 13)
+        # Oyuncu nesnesi oluştur, rastgele boş bir alanda başlat
+        x, y = self.map.get_random_empty_position()
+        self.player = Player(x, y, 4)
 
     def run(self):
         """
@@ -50,12 +54,14 @@ class GameManager:
 
             # Klavye tuşlarını al
             keys = pygame.key.get_pressed()
-            self.player.move(keys)
+            self.player.move(keys, self.map.grid)
 
             # Ekranı temizle
             self.screen.fill((30, 30, 30))  # koyu gri arka plan
 
-            # Oyuncuyu çiz
+            # Oyuncuyu ve haritayı çiz
+            self.screen.fill((30, 30, 30))
+            self.map.draw(self.screen)
             self.player.draw(self.screen)
 
             # Ekranı güncelle
